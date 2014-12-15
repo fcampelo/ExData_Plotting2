@@ -1,6 +1,6 @@
 #Exploratory Data Analysis
 ## Project 02
-### plot1.png
+### plot2.png
 #===============================================================================
 # 1)  Introduction
 #
@@ -23,27 +23,29 @@ if (!exists("SSC")){SCC <- tbl_df(readRDS("NEI_data/Source_Classification_Code.r
 #===============================================================================
 # 3)  Precondition data
 #
-## To make this plot I'll "group_by" year and then summarize the results. Let's 
+## To make this plot I'll "filter" by the Baltimore City, Maryland code (24510), 
+## then "group_by" year, and finally "summarize" the results. Let's 
 ## give it a try:
-Total.byYear<- as.data.frame(
+Baltimore.byYear<- as.data.frame(
                   {NEI %>%
-                    group_by(year) %>%
-                    summarize(sum(Emissions))})
+                  filter(fips==24510) %>%
+                  group_by(year) %>%
+                  summarize(sum(Emissions))})
 
 
-print(Total.byYear)
+print(Baltimore.byYear)
 
 #===============================================================================
 # 4)  Make plot
 #
 ## Now we make a plot (using the *base plotting system*) of Total Emissions 
-## by year. I'll use some of the tricks suggested by Nathan Yau in his excellent 
-## tutorial "Moving Past Default Charts" [1] to give the plot a more pleasant
-## look. ;)
+## by year in Baltimore. I'll use some of the tricks suggested by Nathan Yau in 
+## his excellent tutorial "Moving Past Default Charts" [1] to give the plot a 
+## more pleasant look. ;)
 ## [1]: http://flowingdata.com/2014/10/23/moving-past-default-charts/
 
 # Open PNG device
-png("plot1.png",width = 9.8, height = 6.4, units="in", res=150)
+png("plot2.png",width = 9.8, height = 6.4, units="in", res=150)
 
 # Set plotting parameters:
 par(xpd=FALSE,                    # Clip all plotting to the plotting region
@@ -56,29 +58,29 @@ par(xpd=FALSE,                    # Clip all plotting to the plotting region
 
 # Prepare plot ("empty")
 plot(0,0,type="n",
-     xlim=range(Total.byYear[,1])+c(-1,0),
-     ylim=range(pretty(Total.byYear[,2]/10^6)),
+     xlim=range(Baltimore.byYear[,1])+c(-1,0),
+     ylim=range(pretty(Baltimore.byYear[,2]/10^3)),
      las=1, 
-     main=expression('Total PM'[2.5]*' by year in the U.S.'),
+     main=expression('Total PM'[2.5]*' by year in Baltimore City, Mariland'),
      xlab=expression(italic('Year')), 
-     ylab=expression(italic('Total PM'[2.5]*' (in millions of Tons)')), 
+     ylab=expression(italic('Total PM'[2.5]*' (in thousands of Tons)')), 
      family="Helvetica")
 
 # Get some cool gridlines
 grid(NA, NULL, col="white", lty="solid", lwd=2)
 
 # Get the data to the plot!
-points(x = Total.byYear[,1],
-       y = Total.byYear[,2]/10^6,
+points(x = Baltimore.byYear[,1],
+       y = Baltimore.byYear[,2]/10^3,
        type = "b",
        pch=16, cex=2,
        lwd=2,
        col=1)
 
 # Add some more decoration: year name near each point
-text(x = Total.byYear[,1]+0.1,
-     y = Total.byYear[,2]/10^6,
-     labels = as.character(Total.byYear[,1]),
+text(x = Baltimore.byYear[,1]+0.1,
+     y = Baltimore.byYear[,2]/10^3,
+     labels = as.character(Baltimore.byYear[,1]),
      pos=3,
      cex=0.8,
      col="#666666")
