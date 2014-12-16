@@ -56,7 +56,6 @@ m<-ggplot(Baltimore.byYearType,
       ggtitle(expression('PM'[2.5]*' by type and year in Baltimore City, Mariland')) +
       xlab(expression(italic('Year'))) + 
       ylab(expression(italic('PM'[2.5]*' (in Tons)'))) +
-      annotate("text", x = 2006.5, y = -100, label = "Source: Felipe Campelo | E.P.A.",) +
       theme(axis.title.y = element_text(size = rel(1.5), angle = 90),
             axis.title.x = element_text(size = rel(1.5), angle = 0),
             axis.text = element_text(size = rel(1.25)),

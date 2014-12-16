@@ -43,26 +43,14 @@ print(US.CoalEmissions)
 
 #===============================================================================
 # 4)  Make plot
-
-
-
-
-
-# PAREI AQUI
-
-
-
-
-
-#
-## Now we make a plot (using the *base plotting system*) of Total Emissions 
-## by year in Baltimore. I'll use some of the tricks suggested by Nathan Yau in 
-## his excellent tutorial "Moving Past Default Charts" [1] to give the plot a 
-## more pleasant look. ;)
+## Now we make a plot (I'll use the *base plotting system*) of Total Emissions 
+## from coal combustion-related sources in the U.S.. I'll use some of the tricks 
+## suggested by Nathan Yau in his excellent tutorial "Moving Past Default 
+## Charts" [1] to give the plot a more pleasant look. ;)
 ## [1]: http://flowingdata.com/2014/10/23/moving-past-default-charts/
 
 # Open PNG device
-png("plot2.png",width = 9.8, height = 6.4, units="in", res=150)
+png("plot4.png",width = 9.8, height = 6.4, units="in", res=150)
 
 # Set plotting parameters:
 par(xpd=FALSE,                    # Clip all plotting to the plotting region
@@ -75,29 +63,29 @@ par(xpd=FALSE,                    # Clip all plotting to the plotting region
 
 # Prepare plot ("empty")
 plot(0,0,type="n",
-     xlim=range(Baltimore.byYear[,1])+c(-1,0),
-     ylim=range(pretty(Baltimore.byYear[,2]/10^3)),
+     xlim=range(US.CoalEmissions[,1])+c(-1,0),
+     ylim=range(pretty(US.CoalEmissions[,2]/10^3)),
      las=1, 
-     main=expression('Total PM'[2.5]*' by year in Baltimore City, Mariland'),
+     main="Emissions from Coal Combustion Related Sources in the U.S.",
      xlab=expression(italic('Year')), 
-     ylab=expression(italic('Total PM'[2.5]*' (in thousands of Tons)')), 
+     ylab=expression(italic('PM'[2.5]*' (in thousands of Tons)')), 
      family="Helvetica")
 
 # Get some cool gridlines
 grid(NA, NULL, col="white", lty="solid", lwd=2)
 
 # Get the data to the plot!
-points(x = Baltimore.byYear[,1],
-       y = Baltimore.byYear[,2]/10^3,
+points(x = US.CoalEmissions[,1],
+       y = US.CoalEmissions[,2]/10^3,
        type = "b",
        pch=16, cex=2,
        lwd=2,
        col=1)
 
 # Add some more decoration: year name near each point
-text(x = Baltimore.byYear[,1]+0.1,
-     y = Baltimore.byYear[,2]/10^3,
-     labels = as.character(Baltimore.byYear[,1]),
+text(x = US.CoalEmissions[,1]+0.1,
+     y = US.CoalEmissions[,2]/10^3,
+     labels = as.character(US.CoalEmissions[,1]),
      pos=3,
      cex=0.8,
      col="#666666")
