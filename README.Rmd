@@ -242,7 +242,7 @@ library(dplyr,warn.conflicts = F)
 
 # Load files (only if they are not already loaded - these things are *heavy*!)
 if (!exists("NEI")){NEI <- tbl_df(readRDS("NEI_data/summarySCC_PM25.rds"))}
-if (!exists("SSC")){SCC <- tbl_df(readRDS("NEI_data/Source_Classification_Code.rds"))}
+if (!exists("SCC")){SCC <- tbl_df(readRDS("NEI_data/Source_Classification_Code.rds"))}
 
 #===============================================================================
 # 3)  Precondition data
@@ -281,6 +281,7 @@ m<-ggplot(Baltimore.byYearType,
       ggtitle(expression('PM'[2.5]*' by type and year in Baltimore City, Mariland')) +
       xlab(expression(italic('Year'))) + 
       ylab(expression(italic('PM'[2.5]*' (in Tons)'))) +
+      annotate("text", x = 2006.5, y = -100, label = "Source: Felipe Campelo | E.P.A.",) +
       theme(axis.title.y = element_text(size = rel(1.5), angle = 90),
             axis.title.x = element_text(size = rel(1.5), angle = 0),
             axis.text = element_text(size = rel(1.25)),
@@ -293,4 +294,13 @@ print(m)
 
 # Close the device (uncommented in the original plot3.R file)
 # dev.off()
+```
+
+### Plot 4
+*Across the United States, how have emissions from coal combustion-related sources changed from 1999–2008?*
+
+```{r plot4,cache=TRUE,fig.align='center',fig.height=6.4,fig.width=9.8}
+#                             plot4.R
+#===============================================================================
+#===============================================================================
 ```

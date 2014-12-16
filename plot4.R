@@ -1,0 +1,119 @@
+#Exploratory Data Analysis
+## Project 02
+### plot4.png
+#===============================================================================
+# 1)  Introduction
+#
+# This analysis assumes that the *NEI_data* folder (obtained after unzipping 
+# the *NEI_data.zip* file) is a subfolder of the working directory. In other 
+# words, I assume that the folder structure of the dataset is maintained, 
+# instead of simply pasting all files to the working directory.
+#
+#===============================================================================
+# 2)  Load data
+#
+## I'll use the **dplyr** package to load the data as a _data frame tbl_ object 
+## (it'll make it easier for me to manipulate the whole thing later on):
+library(dplyr,warn.conflicts = F)
+
+# Load files (only if they are not already loaded - these things are *heavy*!)
+if (!exists("NEI")){NEI <- tbl_df(readRDS("NEI_data/summarySCC_PM25.rds"))}
+if (!exists("SSC")){SCC <- tbl_df(readRDS("NEI_data/Source_Classification_Code.rds"))}
+
+#===============================================================================
+# 3)  Precondition data
+#
+
+# Get all codes for "Coal"
+indx<-intersect(grep("Coal",SCC$Short.Name),grep("Comb",SCC$SCC.Level.One))
+# Get corresponding source classification codes
+key<-SCC$SCC[indx]
+
+# Now "filter" the NEI dataset by these codes, "group_by" year, and finally 
+# "summarize" the whole thing.
+US.CoalEmissions<- as.data.frame(
+{ NEI %>%
+    filter(SCC %in% key) %>%
+    group_by(year) %>%
+    summarize(sum(Emissions))})
+
+names(US.CoalEmissions)[2]<-"Total.Emissions"
+print(US.CoalEmissions)
+
+
+#===============================================================================
+# 4)  Make plot
+
+
+
+
+
+# PAREI AQUI
+
+
+
+
+
+#
+## Now we make a plot (using the *base plotting system*) of Total Emissions 
+## by year in Baltimore. I'll use some of the tricks suggested by Nathan Yau in 
+## his excellent tutorial "Moving Past Default Charts" [1] to give the plot a 
+## more pleasant look. ;)
+## [1]: http://flowingdata.com/2014/10/23/moving-past-default-charts/
+
+# Open PNG device
+png("plot2.png",width = 9.8, height = 6.4, units="in", res=150)
+
+# Set plotting parameters:
+par(xpd=FALSE,                    # Clip all plotting to the plotting region
+    oma=c(1.5,0,0,2.5),           # Adjust outer margin - right
+    mar=c(5,4,4,3)+0.1,           # Adjust inner margin - right
+    mgp=c(1.8,.2,0),              # Adjust margin lines
+    tck=0.02,                     # Get inward-facing tick marks on the axes
+    bty="n",                      # Remove box around the plot
+    bg="#DDF0F0")                 # Get a nice background color
+
+# Prepare plot ("empty")
+plot(0,0,type="n",
+     xlim=range(Baltimore.byYear[,1])+c(-1,0),
+     ylim=range(pretty(Baltimore.byYear[,2]/10^3)),
+     las=1, 
+     main=expression('Total PM'[2.5]*' by year in Baltimore City, Mariland'),
+     xlab=expression(italic('Year')), 
+     ylab=expression(italic('Total PM'[2.5]*' (in thousands of Tons)')), 
+     family="Helvetica")
+
+# Get some cool gridlines
+grid(NA, NULL, col="white", lty="solid", lwd=2)
+
+# Get the data to the plot!
+points(x = Baltimore.byYear[,1],
+       y = Baltimore.byYear[,2]/10^3,
+       type = "b",
+       pch=16, cex=2,
+       lwd=2,
+       col=1)
+
+# Add some more decoration: year name near each point
+text(x = Baltimore.byYear[,1]+0.1,
+     y = Baltimore.byYear[,2]/10^3,
+     labels = as.character(Baltimore.byYear[,1]),
+     pos=3,
+     cex=0.8,
+     col="#666666")
+
+# Authorship marker
+mtext("Source: Felipe Campelo | E.P.A.",
+      cex=0.75, 
+      line=0, 
+      side=SOUTH<-1, 
+      adj=1, 
+      outer=TRUE,
+      font=4,
+      family="Helvetica")
+
+# Outer box
+box("outer", lty="solid", col="black")
+
+# Close the device
+dev.off()
