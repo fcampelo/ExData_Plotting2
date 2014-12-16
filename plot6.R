@@ -33,40 +33,60 @@ if (!exists("SSC")){SCC <- tbl_df(readRDS("NEI_data/Source_Classification_Code.r
 # Get indices to the relevant SCCs
 indx<-grep("Vehicles",SCC$Short.Name)
 indx<-indx[-unique(
-                  c(grep("Surface Coating",SCC$Short.Name[indx]),
-                    grep("Motor Vehicle Fires",SCC$Short.Name[indx]),
-                    grep("Chem Manuf",SCC$Short.Name[indx]),
-                    grep("Petrol Trans",SCC$Short.Name[indx])))]
+  c(grep("Surface Coating",SCC$Short.Name[indx]),
+    grep("Motor Vehicle Fires",SCC$Short.Name[indx]),
+    grep("Chem Manuf",SCC$Short.Name[indx]),
+    grep("Petrol Trans",SCC$Short.Name[indx])))]
 
 # Get corresponding source classification codes
 key<-SCC$SCC[indx]
 
+
+
+
+
+
+##### PAREI AQUI - problema na filtragem por fips...
 # Now "filter" the NEI dataset by these codes and by the Baltimore and Los 
 # Angeles fips, then "group_by" year and fips, and finally "summarize" the whole thing.
-BaltimorexLA.VehicleEmissions<- as.data.frame(
+BaltimorexLA<- as.data.frame(
 { NEI %>%
     filter(SCC %in% key) %>%
-    filter(fips==24510 | fips==06037) %>%
-    group_by(c(year,fips)) %>%
+    mutate(fips=as.numeric(fips)) %>%
+    filter(fips %in% c(24510,06037)) %>%
+    mutate(fips=as.factor(fips)) %>%
+    group_by(fips,year) %>%
     summarize(sum(Emissions))})
 
-names(Baltimore.VehicleEmissions)[2]<-"Total.Emissions"
-print(Baltimore.VehicleEmissions)
+names(BaltimorexLA)[1:3]<-c("Place","Year","Total.Emissions")
+levels(BaltimorexLA$fips)<-c("Los Angeles","Baltimore")
+print(BaltimorexLA)
 
+# Divide data frame into Baltimore and LA (absolute emissions), and
+# include column on relative change from the baseline (1999)
+LosAngeles<-BaltimorexLA[1:4,]
+Baltimore<-BaltimorexLA[5:8,]
+
+LosAngeles[,4]<-LosAngeles[,3]/LosAngeles[1,3]
+Baltimore[,4]<-Baltimore[,3]/Baltimore[1,3]
 
 #===============================================================================
 # 4)  Make plot
-## Now we make a plot (I'll use the *base plotting system*) of Total Emissions 
-## from motor vehicle-related sources in Baltimore. I'll use some of the tricks 
+## I'll use some of the tricks 
 ## suggested by Nathan Yau in his excellent tutorial "Moving Past Default 
 ## Charts" [1] to give the plot a more pleasant look. ;)
 ## [1]: http://flowingdata.com/2014/10/23/moving-past-default-charts/
 
 # Open PNG device
-png("plot5.png",width = 9.8, height = 6.4, units="in", res=150)
+png("plot6.png",width = 9.8, height = 6.4, units="in", res=150)
+
+# I'll actually show 2 panels on this figure: the absolute 
+# emissions by year in both Baltimore and LA, each containing info on the 
+# (percentual) reductions in emissions.
 
 # Set plotting parameters:
-par(xpd=FALSE,                    # Clip all plotting to the plotting region
+par(mfrow=c(1,2),                 # Two panels, horizontal
+    xpd=FALSE,                    # Clip all plotting to the plotting region
     oma=c(1.5,0,0,2.5),           # Adjust outer margin - right
     mar=c(5,4,4,3)+0.1,           # Adjust inner margin - right
     mgp=c(1.8,.2,0),              # Adjust margin lines
@@ -74,35 +94,95 @@ par(xpd=FALSE,                    # Clip all plotting to the plotting region
     bty="n",                      # Remove box around the plot
     bg="#DDF0F0")                 # Get a nice background color
 
+# First panel: Baltimore
 # Prepare plot ("empty")
 plot(0,0,type="n",
-     xlim=range(Baltimore.VehicleEmissions[,1])+c(-1,0),
-     ylim=range(pretty(Baltimore.VehicleEmissions[,2]/10^3)),
+     xlim=range(Baltimore$Year)+c(-1,0),
+     ylim=range(pretty(Baltimore$Total.Emissions)),
      las=1, 
-     main="Emissions from Motor Vehicle-Related Sources in Baltimore",
+     main="Change in emissions from motor\nvehicle sources: Baltimore",
      xlab=expression(italic('Year')), 
-     ylab=expression(italic('PM'[2.5]*' (in thousands of Tons)')), 
+     ylab=expression(italic('PM'[2.5]*' (in Tons)')), 
      family="Helvetica")
 
 # Get some cool gridlines
 grid(NA, NULL, col="white", lty="solid", lwd=2)
 
-# Get the data to the plot!
-points(x = Baltimore.VehicleEmissions[,1],
-       y = Baltimore.VehicleEmissions[,2]/10^3,
-       type = "b",
-       pch=16, cex=2,
+# Line connecting the values from 1999 and 2008
+points(c(1999,2008),Baltimore$Total.Emissions[c(1,4)],type="l",col="black",lty=2,lwd=2)
+
+# Plot points
+points(x = Baltimore[,2],
+       y = Baltimore[,3],
+       type = "p",
+       pch=16, 
+       cex=2,
+       col="black")
+
+# Plot vertical lines
+points(x = Baltimore[,2],
+       y = Baltimore[,3],
+       type = "h",
        lwd=2,
-       col=1)
+       lty=1,
+       col="black")
 
-# Add some more decoration: year name near each point
-text(x = Baltimore.VehicleEmissions[,1]+0.1,
-     y = Baltimore.VehicleEmissions[,2]/10^3,
-     labels = as.character(Baltimore.VehicleEmissions[,1]),
-     pos=3,
+# Relative reduction
+text(x = 2008,
+     y = 75,
+     labels = paste0("1999-2008 change: ",round(100*(Baltimore$V4[4]-1),2),"%"),
+     pos=2,
      cex=0.8,
-     col="#666666")
+     col="black",
+     font=4,
+     family="Helvetica")
 
+
+
+# Second panel: Los Angeles
+# Prepare plot ("empty")
+plot(0,0,type="n",
+     xlim=range(LosAngeles$Year)+c(-1,0),
+     ylim=range(pretty(LosAngeles$Total.Emissions)),
+     las=1, 
+     main="Change in emissions from motor\nvehicle sources: Los Angeles",
+     xlab=expression(italic('Year')), 
+     ylab=expression(italic('PM'[2.5]*' (in Tons)')), 
+     family="Helvetica")
+
+# Get some cool gridlines
+grid(NA, NULL, col="white", lty="solid", lwd=2)
+
+# Line connecting the values from 1999 and 2008
+points(c(1999,2008),LosAngeles$Total.Emissions[c(1,4)],type="l",col="black",lty=2,lwd=2)
+
+# Plot points
+points(x = LosAngeles[,2],
+       y = LosAngeles[,3],
+       type = "p",
+       pch=16, 
+       cex=2,
+       col="black")
+
+# Plot vertical lines
+points(x = LosAngeles[,2],
+       y = LosAngeles[,3],
+       type = "h",
+       lwd=2,
+       lty=1,
+       col="black")
+
+# Relative reduction
+text(x = 2008,
+     y = 1450,
+     labels = paste0("1999-2008 change: ",round(100*(LosAngeles$V4[4]-1),2),"%"),
+     pos=2,
+     cex=0.8,
+     col="black",
+     font=4,
+     family="Helvetica")
+
+# Last decorations
 # Authorship marker
 mtext("Source: Felipe Campelo | E.P.A.",
       cex=0.75, 
