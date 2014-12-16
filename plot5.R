@@ -77,31 +77,54 @@ par(xpd=FALSE,                    # Clip all plotting to the plotting region
 # Prepare plot ("empty")
 plot(0,0,type="n",
      xlim=range(Baltimore.VehicleEmissions[,1])+c(-1,0),
-     ylim=range(pretty(Baltimore.VehicleEmissions[,2]/10^3)),
+     ylim=range(pretty(Baltimore.VehicleEmissions[,2])),
      las=1, 
      main="Emissions from Motor Vehicle-Related Sources in Baltimore",
      xlab=expression(italic('Year')), 
-     ylab=expression(italic('PM'[2.5]*' (in thousands of Tons)')), 
+     ylab=expression(italic('PM'[2.5]*' (in Tons)')), 
      family="Helvetica")
 
 # Get some cool gridlines
 grid(NA, NULL, col="white", lty="solid", lwd=2)
 
-# Get the data to the plot!
+# fit linear model and plot regression line
+reg<-lm(I(Baltimore.VehicleEmissions[,2])~Baltimore.VehicleEmissions[,1])
+regy<-coefficients(reg)[1]+c(1999,2008)*coefficients(reg)[2]
+points(c(1998.5,2008.5),regy,type="l",col="#FFAAAA",lty=2,lwd=2)
+
+# Plot points
 points(x = Baltimore.VehicleEmissions[,1],
-       y = Baltimore.VehicleEmissions[,2]/10^3,
-       type = "b",
-       pch=16, cex=2,
+       y = Baltimore.VehicleEmissions[,2],
+       type = "p",
+       pch=16, 
+       cex=2,
+       col=1)
+
+# Plot vertical lines
+points(x = Baltimore.VehicleEmissions[,1],
+       y = Baltimore.VehicleEmissions[,2],
+       type = "h",
        lwd=2,
+       lty=1,
        col=1)
 
 # Add some more decoration: year name near each point
-text(x = Baltimore.VehicleEmissions[,1]+0.1,
-     y = Baltimore.VehicleEmissions[,2]/10^3,
+text(x = Baltimore.VehicleEmissions[,1],
+     y = Baltimore.VehicleEmissions[,2],
      labels = as.character(Baltimore.VehicleEmissions[,1]),
      pos=3,
      cex=0.8,
      col="#666666")
+
+# Linear regression slope
+text(x = 2007,
+     y = 28,
+     labels = paste0(as.numeric(round(coefficients(reg)[2],2)),"Tons/yr"),
+     pos=2,
+     cex=0.8,
+     col="#FF5555",
+     font=1,
+     family="Helvetica")
 
 # Authorship marker
 mtext("Source: Felipe Campelo | E.P.A.",

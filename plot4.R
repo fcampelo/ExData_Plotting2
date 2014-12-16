@@ -74,21 +74,44 @@ plot(0,0,type="n",
 # Get some cool gridlines
 grid(NA, NULL, col="white", lty="solid", lwd=2)
 
-# Get the data to the plot!
+# fit linear model and plot regression line
+reg<-lm(I(US.CoalEmissions[,2]/10^3)~US.CoalEmissions[,1])
+regy<-coefficients(reg)[1]+c(1999,2008)*coefficients(reg)[2]
+points(c(1998.5,2008.5),regy,type="l",col="#FFAAAA",lty=2,lwd=2)
+
+# Plot points
 points(x = US.CoalEmissions[,1],
        y = US.CoalEmissions[,2]/10^3,
-       type = "b",
-       pch=16, cex=2,
+       type = "p",
+       pch=16, 
+       cex=2,
+       col=1)
+
+# Plot vertical lines
+points(x = US.CoalEmissions[,1],
+       y = US.CoalEmissions[,2]/10^3,
+       type = "h",
        lwd=2,
+       lty=1,
        col=1)
 
 # Add some more decoration: year name near each point
-text(x = US.CoalEmissions[,1]+0.1,
+text(x = US.CoalEmissions[,1],
      y = US.CoalEmissions[,2]/10^3,
      labels = as.character(US.CoalEmissions[,1]),
      pos=3,
      cex=0.8,
      col="#666666")
+
+# Linear regression slope
+text(x = 2008,
+     y = 410,
+     labels = paste0(as.numeric(round(coefficients(reg)[2],2))," kTons/yr"),
+     pos=2,
+     cex=0.8,
+     col="#FF5555",
+     font=1,
+     family="Helvetica")
 
 # Authorship marker
 mtext("Source: Felipe Campelo | E.P.A.",

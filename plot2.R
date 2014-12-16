@@ -61,38 +61,61 @@ plot(0,0,type="n",
      xlim=range(Baltimore.byYear[,1])+c(-1,0),
      ylim=range(pretty(Baltimore.byYear[,2]/10^3)),
      las=1, 
-     main=expression('Total PM'[2.5]*' by year in Baltimore City, Mariland'),
+     main=expression('Total PM'[2.5]*' by year in Baltimore City, Maryland'),
      xlab=expression(italic('Year')), 
-     ylab=expression(italic('Total PM'[2.5]*' (in thousands of Tons)')), 
+     ylab=expression(italic('PM'[2.5]*' (in thousands of Tons)')), 
      family="Helvetica")
 
 # Get some cool gridlines
 grid(NA, NULL, col="white", lty="solid", lwd=2)
 
-# Get the data to the plot!
+# fit linear model and plot regression line
+reg<-lm(I(Baltimore.byYear[,2]/10^3)~Baltimore.byYear[,1])
+regy<-coefficients(reg)[1]+c(1999,2008)*coefficients(reg)[2]
+points(c(1998.5,2008.5),regy,type="l",col="#FFAAAA",lty=2,lwd=2)
+
+# Plot points
 points(x = Baltimore.byYear[,1],
        y = Baltimore.byYear[,2]/10^3,
-       type = "b",
-       pch=16, cex=2,
+       type = "p",
+       pch=16, 
+       cex=2,
+       col=1)
+
+# Plot vertical lines
+points(x = Baltimore.byYear[,1],
+       y = Baltimore.byYear[,2]/10^3,
+       type = "h",
        lwd=2,
+       lty=1,
        col=1)
 
 # Add some more decoration: year name near each point
-text(x = Baltimore.byYear[,1]+0.1,
+text(x = Baltimore.byYear[,1],
      y = Baltimore.byYear[,2]/10^3,
      labels = as.character(Baltimore.byYear[,1]),
      pos=3,
      cex=0.8,
      col="#666666")
 
+# Linear regression slope
+text(x = 2008,
+     y = 2.4,
+     labels = paste0(as.numeric(round(coefficients(reg)[2],4))," kTons/yr"),
+     pos=2,
+     cex=0.8,
+     col="#FF5555",
+     font=1,
+     family="Helvetica")
+
 # Authorship marker
-mtext("Source: Felipe Campelo | E.P.A.",
+mtext("Source: Felipe Campelo | EPA",
       cex=0.75, 
       line=0, 
       side=SOUTH<-1, 
       adj=1, 
       outer=TRUE,
-      font=4,
+      font=3,
       family="Helvetica")
 
 # Outer box

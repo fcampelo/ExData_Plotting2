@@ -1,6 +1,6 @@
 #Exploratory Data Analysis
 ## Project 02
-### plot5.png
+### plot6.png
 #===============================================================================
 # 1)  Introduction
 #
@@ -41,13 +41,13 @@ indx<-indx[-unique(
 # Get corresponding source classification codes
 key<-SCC$SCC[indx]
 
-# Now "filter" the NEI dataset by these codes and by the Baltimore fips, 
-# "group_by" year, and finally "summarize" the whole thing.
-Baltimore.VehicleEmissions<- as.data.frame(
+# Now "filter" the NEI dataset by these codes and by the Baltimore and Los 
+# Angeles fips, then "group_by" year and fips, and finally "summarize" the whole thing.
+BaltimorexLA.VehicleEmissions<- as.data.frame(
 { NEI %>%
     filter(SCC %in% key) %>%
-    filter(fips==24510) %>%
-    group_by(year) %>%
+    filter(fips==24510 | fips==06037) %>%
+    group_by(c(year,fips)) %>%
     summarize(sum(Emissions))})
 
 names(Baltimore.VehicleEmissions)[2]<-"Total.Emissions"
