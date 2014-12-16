@@ -1,6 +1,6 @@
 #Exploratory Data Analysis
 ## Project 02
-### plot4.png
+### plot5.png
 #===============================================================================
 # 1)  Introduction
 #
@@ -22,35 +22,48 @@ if (!exists("SSC")){SCC <- tbl_df(readRDS("NEI_data/Source_Classification_Code.r
 
 #===============================================================================
 # 3)  Precondition data
-#
 
-# Get all codes for "Coal" that are related to combustion ("Comb")
-indx<-intersect(grep("Coal",SCC$Short.Name),grep("Comb",SCC$SCC.Level.One))
+# Get all codes for motor vehicle-related emissions. My inclusion criteria were:
+# - Column SSC$Short.names contains the word "Vehicle"; AND
+# - Column SSC$Short.names does not contain the words "Surface Coating"; AND
+# - Column SSC$Short.names does not contain the words "Motor Vehicle Fires"; AND
+# - Column SSC$Short.names does not contain the words "Chem Manuf"; AND
+# - Column SSC$Short.names does not contain the words "Petrol Trans";
+
+# Get indices to the relevant SCCs
+indx<-grep("Vehicles",SCC$Short.Name)
+indx<-indx[-unique(
+                  c(grep("Surface Coating",SCC$Short.Name[indx]),
+                    grep("Motor Vehicle Fires",SCC$Short.Name[indx]),
+                    grep("Chem Manuf",SCC$Short.Name[indx]),
+                    grep("Petrol Trans",SCC$Short.Name[indx])))]
+
 # Get corresponding source classification codes
 key<-SCC$SCC[indx]
 
-# Now "filter" the NEI dataset by these codes, "group_by" year, and finally 
-# "summarize" the whole thing.
-US.CoalEmissions<- as.data.frame(
+# Now "filter" the NEI dataset by these codes and by the Baltimore fips, 
+# "group_by" year, and finally "summarize" the whole thing.
+Baltimore.VehicleEmissions<- as.data.frame(
 { NEI %>%
     filter(SCC %in% key) %>%
+    filter(fips==24510) %>%
     group_by(year) %>%
     summarize(sum(Emissions))})
 
-names(US.CoalEmissions)[2]<-"Total.Emissions"
-print(US.CoalEmissions)
+names(Baltimore.VehicleEmissions)[2]<-"Total.Emissions"
+print(Baltimore.VehicleEmissions)
 
 
 #===============================================================================
 # 4)  Make plot
 ## Now we make a plot (I'll use the *base plotting system*) of Total Emissions 
-## from coal combustion-related sources in the U.S.. I'll use some of the tricks 
+## from motor vehicle-related sources in Baltimore. I'll use some of the tricks 
 ## suggested by Nathan Yau in his excellent tutorial "Moving Past Default 
 ## Charts" [1] to give the plot a more pleasant look. ;)
 ## [1]: http://flowingdata.com/2014/10/23/moving-past-default-charts/
 
 # Open PNG device
-png("plot4.png",width = 9.8, height = 6.4, units="in", res=150)
+png("plot5.png",width = 9.8, height = 6.4, units="in", res=150)
 
 # Set plotting parameters:
 par(xpd=FALSE,                    # Clip all plotting to the plotting region
@@ -63,10 +76,10 @@ par(xpd=FALSE,                    # Clip all plotting to the plotting region
 
 # Prepare plot ("empty")
 plot(0,0,type="n",
-     xlim=range(US.CoalEmissions[,1])+c(-1,0),
-     ylim=range(pretty(US.CoalEmissions[,2]/10^3)),
+     xlim=range(Baltimore.VehicleEmissions[,1])+c(-1,0),
+     ylim=range(pretty(Baltimore.VehicleEmissions[,2]/10^3)),
      las=1, 
-     main="Emissions from Coal Combustion Related Sources in the U.S.",
+     main="Emissions from Motor Vehicle-Related Sources in Baltimore",
      xlab=expression(italic('Year')), 
      ylab=expression(italic('PM'[2.5]*' (in thousands of Tons)')), 
      family="Helvetica")
@@ -75,17 +88,17 @@ plot(0,0,type="n",
 grid(NA, NULL, col="white", lty="solid", lwd=2)
 
 # Get the data to the plot!
-points(x = US.CoalEmissions[,1],
-       y = US.CoalEmissions[,2]/10^3,
+points(x = Baltimore.VehicleEmissions[,1],
+       y = Baltimore.VehicleEmissions[,2]/10^3,
        type = "b",
        pch=16, cex=2,
        lwd=2,
        col=1)
 
 # Add some more decoration: year name near each point
-text(x = US.CoalEmissions[,1]+0.1,
-     y = US.CoalEmissions[,2]/10^3,
-     labels = as.character(US.CoalEmissions[,1]),
+text(x = Baltimore.VehicleEmissions[,1]+0.1,
+     y = Baltimore.VehicleEmissions[,2]/10^3,
+     labels = as.character(Baltimore.VehicleEmissions[,1]),
      pos=3,
      cex=0.8,
      col="#666666")
