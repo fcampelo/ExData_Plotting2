@@ -63,7 +63,7 @@ print(Baltimore.VehicleEmissions)
 ## [1]: http://flowingdata.com/2014/10/23/moving-past-default-charts/
 
 # Open PNG device
-png("plot5.png",width = 9.8, height = 6.4, units="in", res=150)
+png("plot5.png",width = 6.4, height = 4.2, units="in", res=150)
 
 # Set plotting parameters:
 par(xpd=FALSE,                    # Clip all plotting to the plotting region
@@ -117,10 +117,10 @@ text(x = Baltimore.VehicleEmissions[,1],
      col="#666666")
 
 # Linear regression slope
-text(x = 2007,
-     y = 28,
+text(x = 2006,
+     y = 32,
      labels = paste0(as.numeric(round(coefficients(reg)[2],2)),"Tons/yr"),
-     pos=2,
+     pos=3,
      cex=0.8,
      col="#FF5555",
      font=1,

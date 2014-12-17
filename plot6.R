@@ -78,7 +78,7 @@ Baltimore[,4]<-Baltimore[,3]/Baltimore[1,3]
 ## [1]: http://flowingdata.com/2014/10/23/moving-past-default-charts/
 
 # Open PNG device
-png("plot6.png",width = 9.8, height = 6.4, units="in", res=150)
+png("plot6.png",width = 7.8, height = 5.2, units="in", res=150)
 
 # I'll actually show 2 panels on this figure: the absolute 
 # emissions by year in both Baltimore and LA, each containing info on the 
@@ -129,7 +129,7 @@ points(x = Baltimore[,2],
 
 # Relative reduction
 text(x = 2008,
-     y = 75,
+     y = 78,
      labels = paste0("1999-2008 change: ",round(100*(Baltimore$V4[4]-1),2),"%"),
      pos=2,
      cex=0.8,
@@ -174,7 +174,7 @@ points(x = LosAngeles[,2],
 
 # Relative reduction
 text(x = 2008,
-     y = 1450,
+     y = 1480,
      labels = paste0("1999-2008 change: ",round(100*(LosAngeles$V4[4]-1),2),"%"),
      pos=2,
      cex=0.8,

@@ -50,7 +50,7 @@ print(US.CoalEmissions)
 ## [1]: http://flowingdata.com/2014/10/23/moving-past-default-charts/
 
 # Open PNG device
-png("plot4.png",width = 9.8, height = 6.4, units="in", res=150)
+png("plot4.png",width = 6.4, height = 4.2, units="in", res=150)
 
 # Set plotting parameters:
 par(xpd=FALSE,                    # Clip all plotting to the plotting region
@@ -66,7 +66,7 @@ plot(0,0,type="n",
      xlim=range(US.CoalEmissions[,1])+c(-1,0),
      ylim=range(pretty(US.CoalEmissions[,2]/10^3)),
      las=1, 
-     main="Emissions from Coal Combustion Related Sources in the U.S.",
+     main="Emissions from Coal Combustion Sources in the U.S.",
      xlab=expression(italic('Year')), 
      ylab=expression(italic('PM'[2.5]*' (in thousands of Tons)')), 
      family="Helvetica")
@@ -105,7 +105,7 @@ text(x = US.CoalEmissions[,1],
 
 # Linear regression slope
 text(x = 2008,
-     y = 410,
+     y = 480,
      labels = paste0(as.numeric(round(coefficients(reg)[2],2))," kTons/yr"),
      pos=2,
      cex=0.8,

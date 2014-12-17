@@ -43,23 +43,24 @@ print(Baltimore.byYearType)
 library(ggplot2)
 
 # Open PNG device
-png("plot3.png",width = 9.8, height = 6.4, units="in", res=150, bg="transparent")
+png("plot3.png",width = 6.4, height = 4.2, units="in", res=150, bg="transparent")
 
 # Build the ggplot object
 m<-ggplot(Baltimore.byYearType,
           aes(year,
               Total.Emissions)) +
-      geom_point(size=5) +
+      geom_point(size=3) +
       stat_smooth(method="lm",se=F) + 
-      ggtitle(expression('PM'[2.5]*' by type and year in Baltimore City, Mariland')) +
+      ggtitle(expression('PM'[2.5]*' by type and year in Baltimore City, Maryland')) +
       xlab(expression(italic('Year'))) + 
       ylab(expression(italic('PM'[2.5]*' (in Tons)'))) +
-      theme(axis.title.y = element_text(size = rel(1.5), angle = 90),
-            axis.title.x = element_text(size = rel(1.5), angle = 0),
-            axis.text = element_text(size = rel(.75),angle=45),
+      theme(axis.title.y = element_text(size = rel(1.25), angle = 90),
+            axis.title.x = element_text(size = rel(1.25), angle = 0),
+            axis.text.x = element_text(size = rel(.75),angle=45,hjust=1),
+            axis.text.y = element_text(size = rel(.75),angle=0),
             legend.text = element_text(size = rel(1.25)),
             legend.title = element_text(size = rel(1.25)),
-            plot.title = element_text(size = rel(1.75)))
+            plot.title = element_text(size = rel(1.25)))
 
 m + facet_grid(.~type)
 # Flush to the graphics device

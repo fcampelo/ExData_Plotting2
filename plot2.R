@@ -45,7 +45,7 @@ print(Baltimore.byYear)
 ## [1]: http://flowingdata.com/2014/10/23/moving-past-default-charts/
 
 # Open PNG device
-png("plot2.png",width = 9.8, height = 6.4, units="in", res=150)
+png("plot2.png",width = 6.4, height = 4.2, units="in", res=150)
 
 # Set plotting parameters:
 par(xpd=FALSE,                    # Clip all plotting to the plotting region
@@ -100,7 +100,7 @@ text(x = Baltimore.byYear[,1],
 
 # Linear regression slope
 text(x = 2008,
-     y = 2.4,
+     y = 2.6,
      labels = paste0(as.numeric(round(coefficients(reg)[2],4))," kTons/yr"),
      pos=2,
      cex=0.8,
